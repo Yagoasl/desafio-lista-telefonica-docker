@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  db:
+    build: 
+      context: "."
+      dockerfile: Dockerfile-db
+    container_name: mysql-container
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    ports:
+    - 8080:8080
+  api:
+    build: "."
+    container_name: django-container
+    restart: always
+    volumes:
+      - .:/ProjetoCAM
+    environment:
+      - ALLOWED_HOSTS=127.0.0.1, localhost
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
